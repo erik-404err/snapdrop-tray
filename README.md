@@ -4,7 +4,7 @@ Crossplatform Snapdrop Client with functional Tray Icon, ported with Electron.
 
 Thanks to the electon-team for https://www.electronjs.org/!
 
-Thanks to the Snapdrop-team for https://snapdrop.net/! [github](https://github.com/RobinLinus/snapdrop)
+Thanks to the Snapdrop-team for https://snapdrop.net/! ([GitHub Repository](https://github.com/RobinLinus/snapdrop))
 
 ## Installation:
 Im working on building this as an app, currently its just code. To install it now, open a Terminal (after installing 'git' and 'npm') run this command:
