@@ -270,7 +270,7 @@ function GetQuitNotificationCheckboxState(){//Get the stored state of the Quit n
 
 function GetStartNotificationCheckboxState(){//Get the stored state of the Start Notification checkbox
   if(store.get('StartNotification')==null){
-    return true;
+    return false;
   } else {
     return store.get('StartNotification');
   }
@@ -278,7 +278,7 @@ function GetStartNotificationCheckboxState(){//Get the stored state of the Start
 
 function GetUsingWindowCheckboxState(){//Get the stored state of the Using Window checkbox
   if(store.get('UsingWindow')==null){
-    return true;
+    return false;
   } else {
     return store.get('UsingWindow');
   }
@@ -286,7 +286,7 @@ function GetUsingWindowCheckboxState(){//Get the stored state of the Using Windo
 
 function GetUsingFrameCheckboxState(){//Get the stored state of the Using Frame checkbox
   if(store.get('UsingFrame')==null){
-    return true;
+    return false;
   } else {
     return store.get('UsingFrame');
   }
