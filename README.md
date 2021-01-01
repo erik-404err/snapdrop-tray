@@ -4,7 +4,11 @@ Thanks to the electon-team for https://www.electronjs.org/ and thanks to the Sna
 (github: https://github.com/RobinLinus/snapdrop)
 
 # Installation:
-- nothing here yet
+Im working on building this as an app, currently its just code. To install it now, open a Terminal (after installing 'git' and 'npm') run this command:
+```
+git clone https://github.com/erik-404err/snapdrop-tray.git && cd ./snapdrop-tray && npm install electron --save-dev && npm install path mime-types electron-store
+```
+Then run `npm start`
 
 # How to use it?
 
