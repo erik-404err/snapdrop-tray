@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Snapdrop</title>
+        <style>
+
+            h3{
+                color: white;
+                text-align: left;
+                font-size: 20px;
+                margin-left: 35px;
+                margin-top: 10px;
+                margin-bottom: 0px;
+                font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+                font-weight: 400;
+            }
+
+            body{
+                margin: 0px;
+                height: 190px;
+            }
+         
+            textarea{
+                width: 330px;
+                height: 51px;
+                box-sizing: border-box;
+                border: none;
+                outline: none;
+                padding: 18px 15px;
+                border-radius: 16px;
+                margin-top: 16px;
+                margin-left: 3px;
+                line-height: 15px;
+                font-size: 14px;
+                font-family: sans-serif;
+                resize: none;
+                background: #333333;
+                color: white;
+                caret-color: #4285f4;
+            }
+
+            button{
+                align-self: right;
+                float: right;
+                margin-top: 22px;
+                margin-left: 15px;
+                margin-right: 15px;
+                background-color: #121212;
+                border:none ;
+                color: #4285f4;
+                font-family: sans-serif;
+                font-size: 14px;
+                font-weight: 600;
+                letter-spacing: 2px 
+            }
+
+            button:focus{
+                outline: none;
+            }
+
+            div{
+                border-radius: 10px;
+                background-color: #121212;   
+                height: 190px;
+                margin-top: 0px;
+            }
+            
+              
+        </style>
+    </head>
+    <body>
+    <div>
+                <h3>Send a Message</h3>
+                <textarea id="textInput" placeholder="Send a message" autocomplete="off" autofocus></textarea>
+                <button type="submit" onclick="send()">SEND</button>
+                <button type="submit" onclick="cancel()">CANCEL</button>    
+        
+    </div>
+        <script>
+            const { ipcRenderer, remote } = require( "electron" );
+
+            function cancel(){
+                ipcRenderer.send('textInputCancel'); //tiggers main.js ln.72
+            };
+
+            function send(){
+                ipcRenderer.send('textInput', document.getElementById('textInput').value ); //tiggers main.js ln.154
+            };
+        </script>
+    </body>
+</html>
