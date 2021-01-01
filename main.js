@@ -308,7 +308,7 @@ app.whenReady().then(createWindow).then(StartNotification).then(() => {
   } else { //if no window should be opend
     SetSendMenu(); //build advanced TrayMenu
   }
-  tray.setToolTip(GetToolTip()); //get the text shown when hovering over the TrayIcon
+  tray.setToolTip(GetToolTip());    //get the text shown when hovering over the TrayIcon
   tray.setContextMenu(contextMenu); //setting contextMenu
 });
 //END
