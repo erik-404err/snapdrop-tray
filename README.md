@@ -1,5 +1,7 @@
 # snapdrop-tray
-Crossplatform Snapdrop Client with functional Tray Icon, ported with Electron
+Crossplatform Snapdrop Client with functional Tray Icon, ported with Electron.
+Thanks to the electon-team for https://www.electronjs.org/ and thanks to the Snapdrop-team for https://snapdrop.net/!
+(github: https://github.com/RobinLinus/snapdrop)
 
 # Installation:
 - nothing here yet
