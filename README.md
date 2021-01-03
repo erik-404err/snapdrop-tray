@@ -26,7 +26,7 @@ Once you started the app (or ran `npm start` on MacOS) you should see a Tray ico
 
 'Quit All' and 'Reload' are pretty self explanatory.
 
-The Submenus 'Send Text' and 'Send Files' should show your Snapdrop-name (Windows only) at the top and all other Snapdrop Devices at the bottom.
+The Submenus 'Send Text' and 'Send Files' should show your Snapdrop-name at the top and all other Snapdrop Devices at the bottom.
 
 The 'Settings' Submenu contains:
 
