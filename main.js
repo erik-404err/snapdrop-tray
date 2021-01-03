@@ -1,5 +1,5 @@
 //Require
-const { app, BrowserWindow, Notification, Menu, Tray, ipcMain, dialog } = require('electron'); //electron Modules
+const { app, BrowserWindow, Notification, Menu, Tray, ipcMain, dialog, nativeImage } = require('electron'); //electron Modules
 const Store = require('electron-store'); //storeing data in Electron
 const fs = require('fs');//acessing local files (for sending files via TrayMenu)
 const path = require('path');//getting filename from path //may be removed in the future to clean up code (if workaround found)
@@ -7,13 +7,13 @@ const mime = require('mime-types');//getting MIME-type from extention //may be r
 //END
 
 
-//global variables
-var ClientName = 'The eaiest way to transfer data across devices';//as long as no name is set, display this
+//global variableslet 
+var ClientName = 'The eaiest way to transfer data across devices';   //as long as no name is set, display this
 var ClearName = null           //Clientname without sentences, just the name //may be removed in the future to clean up code (if workaround found)
 const store = new Store();    //for storeing data after app ic closed
 var contextMenu = null;      //Menu of the Tray icon
 var win = null;             //the \'Snapdrop\' window
-let tray = null;           //the tray icon itself
+tray = null                //the tray icon itself
 var peers = [];           //Array of all current peers
 var txt = null;          //The \'text input\' window
 //END
@@ -23,9 +23,9 @@ var txt = null;          //The \'text input\' window
 
 //listener for sendName
 ipcMain.on('sendName', (event, newClientName) => { //triggerd in ui.js ln.16
-  ClientName = 'You are known as ' + newClientName;
+  ClientName = 'You are known as \'' + newClientName + '\'';
   ClearName = newClientName;
-  console.log(ClientName);//log ClientName
+  console.log('[main.js]: ' + ClientName);//log ClientName
   SetSendMenu();// adds the name, then updates the Menu
 });
 //END
@@ -34,14 +34,14 @@ ipcMain.on('sendName', (event, newClientName) => { //triggerd in ui.js ln.16
 //listener for peerJoined
 ipcMain.on('peerJoined', (event, peer) => { //triggerd in ui.js ln.32
   peers[peers.length] = {name: peer.name.displayName, id: peer.id};//adds name and id to peers
-  console.log(peer.name.displayName + ' joined!')//log that peer joined
+  console.log('[main.js]: \'' + peer.name.displayName + '\' joined!')//log that peer joined
   SetSendMenu();//then updates the Menu
 });
 
 //listener for clearPeers
 ipcMain.on('clearPeers', () => { //triggerd in ui.js ln.56
   peers = [];//clear all peers
-  console.log('cleared peers')//log that peers cleared
+  console.log('[main.js]: ' + 'cleared peers')//log that peers cleared
   SetSendMenu();//then updates the Menu
 });
 
@@ -54,7 +54,7 @@ ipcMain.on('peerLeft', (event, peerId) => { //triggerd in ui.js ln.45
     }
   };
   if(PeerPos == null){return;}; //if peer doesnt exist, no need for removal
-  console.log('Peer \'' + peers[PeerPos].name + '\' left');//log that peer left
+  console.log('[main.js]: ' + 'Peer \'' + peers[PeerPos].name + '\' left');//log that peer left
   if(peers.length == 1){  //if only one peer exists
     peers = [];   //remove and done
   } else {
@@ -83,7 +83,7 @@ function createWindow () {
     y: 250,
     show: GetUsingWindowCheckboxState(), //get checkbox states
     frame: GetUsingFrameCheckboxState(),
-    icon:'./images/logo_transparent_512x512.png', //set icon in Taskbar
+    icon: path.join(__dirname, '/../images/logo_transparent_512x512.png'), //set icon in Taskbar
     webPreferences: {
       nodeIntegration: true, // for ipcRenderer.send/on ...
       contextIsolation: false //this is a bad idea (according to: https://github.com/electron/electron/issues/23506) but 'true' causes:
@@ -102,7 +102,7 @@ function StartNotification () {
   const notification = { //create Notification with properties
     title: 'Snapdrop',
     body: 'Started succsessfully!',
-    icon: './images/logo_transparent_512x512.png'
+    icon: path.join(__dirname, '/../images/logo_transparent_512x512.png')
   };
   if(store.get('StartNotification')){//get checkbox state
     new Notification(notification).show();//show Notification
@@ -116,7 +116,7 @@ function QuitNotification () {
   const QuitNotification = {//create Notification with properties
     title: 'Snapdrop Quit',
     body: 'The window needs to stay open in order for the tray icon to work (turn off this notification in the tray menu)',
-    icon: './images/logo_transparent_512x512.png'
+    icon: path.join(__dirname, '/../images/logo_transparent_512x512.png'), //set icon in Taskbar
   };
   SaveStates();
   if (store.get('QuitNotification')) { //get checkbox state
@@ -142,7 +142,7 @@ function SendTextTo (id){
     width: 400,
     height: 210,
     frame: false,
-    icon:'./images/logo_transparent_512x512.png',
+    icon: path.join(__dirname, '/../images/logo_transparent_512x512.png'), //set icon in Taskbar
     transparent: true, //doesnt work for linux, background will be square, not round
     backgroundColor: '#00121212', //since fully transparent isnt possible on linux (#00..) is shows up black --Find a way to determin client OS
     webPreferences: {
@@ -204,7 +204,7 @@ function GetToolTip(){
 //function that returns the Settings Submenu
 function SettingsSubmenu(){
   var submenu =[
-    { label: 'Start Notification', sublabel: 'here', id: 'start', type: 'checkbox', checked: GetStartNotificationCheckboxState() },  //Settings via checkboxes
+    { label: 'Start Notification', id: 'start', type: 'checkbox', checked: GetStartNotificationCheckboxState() },  //Settings via checkboxes
     { label: 'Quit Notification', id: 'quit', type: 'checkbox', checked: GetQuitNotificationCheckboxState() },
     { label: 'Using Window', id: 'window', type: 'checkbox', checked: GetUsingWindowCheckboxState() },
     { label: 'Using Frame', id: 'frame', type: 'checkbox', checked: GetUsingFrameCheckboxState() },
@@ -252,8 +252,8 @@ function SetSendMenu(){
       {label: 'Reload', click() {SaveStates();app.relaunch();app.exit()}},    //Reload after saving prefs
       { label: 'Quit All', click () {SaveStates();app.quit()}}, //buttion to quit all
     ]);
-    tray.setToolTip(GetToolTip()); //get the text shown when hovering over the TrayIcon
     tray.setContextMenu(contextMenu); //setting contextMenu
+    tray.setToolTip(GetToolTip()); //get the text shown when hovering over the TrayIcon
   };//EndIf
 };
 //END
@@ -296,7 +296,7 @@ function GetUsingFrameCheckboxState(){//Get the stored state of the Using Frame 
 
 //when App ready, call createWindow and build the Tray icon
 app.whenReady().then(createWindow).then(StartNotification).then(() => {
-  tray = new Tray('./images/logo_transparent_white_512x512.png')
+  tray = new Tray(path.join(__dirname, '/../images/logo_transparent_white_512x512.png'))//(__dirname + '. ./images/logo_transparent_white_512x512.png');
   if(GetUsingWindowCheckboxState()){  
     contextMenu = Menu.buildFromTemplate([  //context Menu With Window
       { label: 'Show/Hide', click() {ShowHide()}},
@@ -308,8 +308,8 @@ app.whenReady().then(createWindow).then(StartNotification).then(() => {
   } else { //if no window should be opend
     SetSendMenu(); //build advanced TrayMenu
   }
-  tray.setToolTip(GetToolTip());    //get the text shown when hovering over the TrayIcon
   tray.setContextMenu(contextMenu); //setting contextMenu
+  tray.setToolTip(GetToolTip()); //get the text shown when hovering over the TrayIcon
 });
 //END
 
