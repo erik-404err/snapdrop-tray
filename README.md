@@ -8,16 +8,15 @@ Thanks to the Snapdrop-team for https://snapdrop.net/! ([GitHub Repository](http
 
 ## Installation:
 
-Linux only, for now:
-Take a look at the [releases](https://github.com/erik-404err/snapdrop-tray/releases).
+Take a look at the [releases](https://github.com/erik-404err/snapdrop-tray/releases).(Linux .deb and Win .exe)
 
-Currently theres only a Linux .deb that can't be installed on MacOs or Windows. Im working on building the app for thoose platforms too.
+If you want this app on MacOS you can eigth wait till I figured out how to build electronjs for it, or launch the sourcecode. 
 
-Until then you can try to launch the sourcecode. Clone this repository, `npm install electron path mime-types electron-store`, move the '/images' folder one directory up (working on a fix) and then run `npm start`.
+Clone this repository, `npm install electron path mime-types electron-store`, move the '/images' folder one directory up (working on a fix) and then run `npm start`.
 
 ## How to use it?
 
-Once you ran `npm start` you should see a Tray icon on the bottom right. When clicking on it, you should see a Menu constaining:
+Once you started the app (or ran `npm start` on MacOS) you should see a Tray icon on the bottom right (or under `^` on Windows). When right-clicking on it, you should see a Menu constaining:
 
 - __Settings__   >
 - __Send Files__ >
@@ -27,7 +26,7 @@ Once you ran `npm start` you should see a Tray icon on the bottom right. When cl
 
 'Quit All' and 'Reload' are pretty self explanatory.
 
-The Submenus 'Send Text' and 'Send Files' should show your Snapdrop-name at the top and all other Snapdrop Devices at the bottom.
+The Submenus 'Send Text' and 'Send Files' should show your Snapdrop-name (Windows only) at the top and all other Snapdrop Devices at the bottom.
 
 The 'Settings' Submenu contains:
 
