@@ -7,11 +7,13 @@ Thanks to the electon-team for https://www.electronjs.org/!
 Thanks to the Snapdrop-team for https://snapdrop.net/! ([GitHub Repository](https://github.com/RobinLinus/snapdrop))
 
 ## Installation:
-Im working on building this as an app, currently its just code. To install it now, open a Terminal (after installing 'git' and 'npm') run this command:
-```
-git clone https://github.com/erik-404err/snapdrop-tray.git && cd ./snapdrop-tray && npm install electron --save-dev && npm install path mime-types electron-store
-```
-Then run `npm start`
+
+Linux only, for now:
+Take a look at the [releases](https://github.com/erik-404err/snapdrop-tray/releases).
+
+Currently theres only a Linux .deb that can't be installed on MacOs or Windows. Im working on building the app for thoose platforms too.
+
+Until then you can try to launch the sourcecode. Clone this repository, `npm install electron path mime-types electron-store` via npm, move the '/images' folder one directory up (working on a fix) and then run `npm start`.
 
 ## How to use it?
 
