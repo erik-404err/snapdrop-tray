@@ -13,7 +13,7 @@ Take a look at the [releases](https://github.com/erik-404err/snapdrop-tray/relea
 
 Currently theres only a Linux .deb that can't be installed on MacOs or Windows. Im working on building the app for thoose platforms too.
 
-Until then you can try to launch the sourcecode. Clone this repository, `npm install electron path mime-types electron-store` via npm, move the '/images' folder one directory up (working on a fix) and then run `npm start`.
+Until then you can try to launch the sourcecode. Clone this repository, `npm install electron path mime-types electron-store`, move the '/images' folder one directory up (working on a fix) and then run `npm start`.
 
 ## How to use it?
 
