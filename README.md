@@ -44,3 +44,6 @@ The 'Settings' Submenu contains:
 - When reloading the application, the old device is still found in Snapdrop
 - The Window isnt in the perfect positioning for everybody. This can be fixed by (somehow) getting the screenresulution of the client 
 
+## Add in the Future
+- an 'lauch on startup' option
+- dynamic resizing of the textarea in TextInput.html
