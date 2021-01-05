@@ -8,6 +8,7 @@
     "start": "electron .",
     "pack": "electron-builder --dir",
     "distlin": "electron-builder --linux",
+    "distmac": "electron-builder --mac",
     "distwin": "electron-builder --win"
   },
   "author": "erik-404err",
@@ -17,19 +18,18 @@
     "electron-builder": "^22.9.1"
   },
   "dependencies": {
+    "auto-launch": "^5.0.5",
     "electron-store": "^6.0.1",
     "mime-types": "^2.1.27",
     "path": "^0.12.7"
   },
   "build": {
     "appId": "com.electron.snapdrop-tray",
-    "productName": "Snapdrop Tray",
-    "win": {
-      "target": "nsis",
-      "icon": "../images/512x512.png"
-    },
+    "productName": "SnapdropTray",
     "linux": {
-      "target": [ "deb" ],
+      "target": [
+        "deb"
+      ],
       "maintainer": "erik-404err",
       "category": "Office",
       "icon": "../images/512x512.png"
@@ -39,9 +39,18 @@
       "depends": [
         "libappindicator1",
         "libnotify4"
-      ]   
+      ]
     },
-    "extraFiles":[
+    "mac": {
+      "target": "default",
+      "icon": "../images/512x512.png",
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "../images/512x512.png"
+    },
+    "extraFiles": [
       {
         "from": "./images",
         "to": "./resources/images"
