@@ -1,7 +1,8 @@
 //Require
-const { app, BrowserWindow, Notification, Menu, Tray, ipcMain, dialog, nativeImage } = require('electron'); //electron Modules
+const { app, BrowserWindow, Notification, Menu, Tray, ipcMain, dialog, screen } = require('electron'); //electron Modules
 const Store = require('electron-store'); //storeing data in Electron
 const fs = require('fs');//acessing local files (for sending files via TrayMenu)
+const AutoLaunch = require('auto-launch');  //needed for 'launch on startup';https://electronjs.org/docs/api/app#appsetloginitemsettingssettings-macos-windows is not supported on linux
 const path = require('path');//getting filename from path //may be removed in the future to clean up code (if workaround found)
 const mime = require('mime-types');//getting MIME-type from extention //may be removed in the future to clean up code (if workaround found)
 //END
@@ -13,7 +14,7 @@ var ClearName = null           //Clientname without sentences, just the name //m
 const store = new Store();    //for storeing data after app ic closed
 var contextMenu = null;      //Menu of the Tray icon
 var win = null;             //the \'Snapdrop\' window
-tray = null                //the tray icon itself
+var tray = null            //the tray icon itself
 var peers = [];           //Array of all current peers
 var txt = null;          //The \'text input\' window
 //END
@@ -28,8 +29,6 @@ ipcMain.on('sendName', (event, newClientName) => { //triggerd in ui.js ln.16
   console.log('[main.js]: ' + ClientName);//log ClientName
   SetSendMenu();// adds the name, then updates the Menu
 });
-//END
-
 
 //listener for peerJoined
 ipcMain.on('peerJoined', (event, peer) => { //triggerd in ui.js ln.32
@@ -76,11 +75,12 @@ ipcMain.on('textInputCancel', (event, arg) => {txt.destroy()}); //triggerd in Te
 
 //function to create a browser window
 function createWindow () { 
+  var clientScreen = screen.getPrimaryDisplay(); //get screen info
   win = new BrowserWindow({ //create a Browser Window
-    width: 400,
+    width: 400, //constant size for now ...
     height: 800,
-    x: 1525, //this works for my setup, function for allways correct position required
-    y: 250,
+    x: clientScreen.workArea.width + clientScreen.workArea.x - 400,
+    y: clientScreen.workArea.height + clientScreen.workArea.y- 800,
     show: GetUsingWindowCheckboxState(), //get checkbox states
     frame: GetUsingFrameCheckboxState(),
     icon: path.join(__dirname, '/../images/logo_transparent_512x512.png'), //set icon in Taskbar
@@ -88,7 +88,7 @@ function createWindow () {
       nodeIntegration: true, // for ipcRenderer.send/on ...
       contextIsolation: false //this is a bad idea (according to: https://github.com/electron/electron/issues/23506) but 'true' causes:
       //Uncaught ReferenceError: require/Event is not defined at network.js & ui.js
-      //not that bad, since index.html doesnt contain 'untrusted content'
+      //not that bad, since index.html doesn't contain 'untrusted content'
       //https://www.electronjs.org/docs/tutorial/security#isolation-for-untrusted-content
     }
   });
@@ -142,7 +142,7 @@ function SendTextTo (id){
     width: 400,
     height: 210,
     frame: false,
-    icon: path.join(__dirname, '/../images/logo_transparent_512x512.png'), //set icon in Taskbar
+    icon: path.join(__dirname, '/../images/logo_transparent_white_512x512.png'), //set icon in Taskbar
     transparent: true, //doesnt work for linux, background will be square, not round
     backgroundColor: '#00121212', //since fully transparent isnt possible on linux (#00..) is shows up black --Find a way to determin client OS
     webPreferences: {
@@ -152,7 +152,7 @@ function SendTextTo (id){
   });
   txt.loadFile('TextDialog.html');//load the .html
   ipcMain.on('textInput', (event, textGiven) => { //triggerd in TextDialog.html ln.78
-    win.webContents.send('sendText', {text: textGiven, to: id}); //triggers network.js ln.385
+    win.webContents.send('sendText', {text: textGiven, to: id}); //triggers network.js ln.386
     txt.destroy()//destroy the window
   });
 };
@@ -161,36 +161,35 @@ function SendTextTo (id){
 
 //function called to SendFilesTo ID 
 function SendFilesTo (id, name){
-  dialog.showOpenDialog({   //open dialog
+  var paths = dialog.showOpenDialogSync({   //open dialog syncronus
     title: 'Select files for \'' + name + '\'',//set title for dialog 
     buttonLabel: 'Send', //cange open butten to 'Send'
     properties: ['openFile', 'multiSelections']  //with proerties
-  }).then(result => {
-    if(result.canceled){return;};//retun if user canceld the promp
+  });
+  if(paths == null ){return;};//retun if user canceld the promp
     
-    var dataSend = [];var nameSend = [];var typeSend = [];  //local variable reset
-    for(let i = 0; i < result.filePaths.length; i++){ // loop though filepaths 
-      dataSend[i] = fs.readFileSync(result.filePaths[i]); //read the file
-      nameSend[i] = path.parse(result.filePaths[i]).base; //get filename
-      typeSend[i] = mime.lookup(result.filePaths[i]); //get MIME-Type
-      if(typeSend[i] == false){ //if no type was recognised
-        typeSend[i] = 'application/octet-stream' //use 'binary' (no extention)
-      }
-    };
+  var dataSend = [];var nameSend = [];var typeSend = [];  //local variable reset
+  for(let i = 0; i < paths.length; i++){ // loop though filepaths 
+    dataSend[i] = fs.readFileSync(paths[i]); //read the file
+    nameSend[i] = path.parse(paths[i]).base; //get filename
+    typeSend[i] = mime.lookup(paths[i]); //get MIME-Type
+    if(typeSend[i] == false){ //if no type was recognised
+      typeSend[i] = 'application/octet-stream' //use 'binary' (no extention)
+    }
+  };
 
-    win.webContents.send('sendFiles', { //triggers network.js ln.373
-      to: id,
-      files: [],
-      data: dataSend,
-      name: nameSend,
-      type: typeSend 
-    });
+  win.webContents.send('sendFiles', { //triggers network.js ln.374
+    to: id,
+    files: [],
+    data: dataSend,
+    name: nameSend,
+    type: typeSend 
   });
 };
 //END
 
 
-//function that returns the proper ToolTip string
+//function that returns the proper ToolTip string //DESNT WORK ON LINUX: https://github.com/electron/electron/issues/25976
 function GetToolTip(){
   if(ClearName == null){
     return 'Snapdrop';
@@ -204,12 +203,13 @@ function GetToolTip(){
 //function that returns the Settings Submenu
 function SettingsSubmenu(){
   var submenu =[
-    { label: 'Start Notification', id: 'start', type: 'checkbox', checked: GetStartNotificationCheckboxState() },  //Settings via checkboxes
+    { label: 'Lauch on startup', id: 'auto', type: 'checkbox', checked: GetAutoLauncheckboxState()},  //Settings via checkboxes
+    { label: 'Start Notification', id: 'start', type: 'checkbox', checked: GetStartNotificationCheckboxState() },
     { label: 'Quit Notification', id: 'quit', type: 'checkbox', checked: GetQuitNotificationCheckboxState() },
     { label: 'Using Window', id: 'window', type: 'checkbox', checked: GetUsingWindowCheckboxState() },
     { label: 'Using Frame', id: 'frame', type: 'checkbox', checked: GetUsingFrameCheckboxState() },
     { label: 'ApplySeperator', type: 'separator'},
-    { label: 'Apply', click() {SaveStates();app.relaunch();app.exit()}} //relaunch to apply changes
+    { label: 'Apply', click() {SaveStates();win.webContents.send('disconnect');app.relaunch();app.exit()}} //relaunch to apply changes and disconnect
   ];
   return submenu; //return the submenu
 };
@@ -218,7 +218,7 @@ function SettingsSubmenu(){
 
 //function to construct a new menu when called and nesessery
 function SetSendMenu(){
-  if(!GetUsingWindowCheckboxState()){ //Only if no window exists
+  if(!GetUsingWindowCheckboxState() && tray != null){ //Only if no window exists
 
     var DeviceTextSubmenu = [     //Submenu for sending Text
       { label: ClientName, id: 'clientname'},
@@ -249,7 +249,7 @@ function SetSendMenu(){
       { label: 'Send Files', id: 'sendfiles', submenu: DeviceFilesSubmenu},   //filesSubmenu
       { label: 'Send Text', id: 'sendtext', submenu: DeviceTextSubmenu},      //textSubmenu
       { label: 'QuitSeperator', type: 'separator'},
-      {label: 'Reload', click() {SaveStates();app.relaunch();app.exit()}},    //Reload after saving prefs
+      {label: 'Reload', click() {SaveStates();win.webContents.send('disconnect');app.relaunch();app.exit()}},    //Reload after saving prefs and disconnect
       { label: 'Quit All', click () {SaveStates();app.quit()}}, //buttion to quit all
     ]);
     tray.setContextMenu(contextMenu); //setting contextMenu
@@ -260,9 +260,17 @@ function SetSendMenu(){
 
 
 //Get CheckboxStartes
+function GetAutoLauncheckboxState(){//Get the stored state of the autolaunch checkbox
+  if(store.get('AutoLaunch')==null){
+    return true;  //default true
+  } else {
+    return store.get('AutoLaunch');
+  }
+};
+
 function GetQuitNotificationCheckboxState(){//Get the stored state of the Quit notofication checkbox
   if(store.get('QuitNotification')==null){
-    return true;
+    return true;  //default true
   } else {
     return store.get('QuitNotification');
   }
@@ -270,7 +278,7 @@ function GetQuitNotificationCheckboxState(){//Get the stored state of the Quit n
 
 function GetStartNotificationCheckboxState(){//Get the stored state of the Start Notification checkbox
   if(store.get('StartNotification')==null){
-    return false;
+    return false;  //default false
   } else {
     return store.get('StartNotification');
   }
@@ -278,7 +286,7 @@ function GetStartNotificationCheckboxState(){//Get the stored state of the Start
 
 function GetUsingWindowCheckboxState(){//Get the stored state of the Using Window checkbox
   if(store.get('UsingWindow')==null){
-    return false;
+    return false;  //default false
   } else {
     return store.get('UsingWindow');
   }
@@ -286,7 +294,7 @@ function GetUsingWindowCheckboxState(){//Get the stored state of the Using Windo
 
 function GetUsingFrameCheckboxState(){//Get the stored state of the Using Frame checkbox
   if(store.get('UsingFrame')==null){
-    return false;
+    return false;  //default false
   } else {
     return store.get('UsingFrame');
   }
@@ -296,13 +304,13 @@ function GetUsingFrameCheckboxState(){//Get the stored state of the Using Frame 
 
 //when App ready, call createWindow and build the Tray icon
 app.whenReady().then(createWindow).then(StartNotification).then(() => {
-  tray = new Tray(path.join(__dirname, '/../images/logo_transparent_white_512x512.png'))//(__dirname + '. ./images/logo_transparent_white_512x512.png');
+  tray = new Tray(path.join(__dirname, '/../images/logo_transparent_white_512x512.png'));//why dosnt ../images/ work ...
   if(GetUsingWindowCheckboxState()){  
     contextMenu = Menu.buildFromTemplate([  //context Menu With Window
       { label: 'Show/Hide', click() {ShowHide()}},
       { label: 'Settings', id:'checkboxes', submenu: SettingsSubmenu()}, //settings submenu
       { label: 'QuitSeperator', type: 'separator'},
-      { label: 'Reload', click() {SaveStates();app.relaunch();app.exit()}},    //Reload after saving prefs
+      { label: 'Reload', click() {SaveStates();win.webContents.send('disconnect');app.relaunch();app.exit()}},    //Reload after saving prefs and disconnect
       { label: 'Quit All', click () {SaveStates();app.quit()}}               //buttion to quit all
     ]);
   } else { //if no window should be opend
@@ -310,6 +318,21 @@ app.whenReady().then(createWindow).then(StartNotification).then(() => {
   }
   tray.setContextMenu(contextMenu); //setting contextMenu
   tray.setToolTip(GetToolTip()); //get the text shown when hovering over the TrayIcon
+  let autolauncher = new AutoLaunch({ //create an auto launcher
+    name: 'SnapdropTray'  //no path needs to be specyfied; https://github.com/Teamwork/node-auto-launch/issues/99 -> this is why productName='SnapdropTray' and not 'Snapdrop Tray'
+  });
+
+  autolauncher.isEnabled().then(function(isEnabled){//lookup if autostart already is enabled
+    if(GetAutoLauncheckboxState()){
+      if(!isEnabled){ //if it should but it isnt
+        autolauncher.enable(); //enable
+      };
+    } else {
+      if(isEnabled){ //if it shouldn't but it is
+        autolauncher.disable(); //disable
+      };
+    };
+  });
 });
 //END
 
@@ -325,9 +348,12 @@ app.on('window-all-closed', () => {
 
 //save users Prefrences
 function SaveStates(){
+  store.set('AutoLaunch', contextMenu.commandsMap[contextMenu.getMenuItemById('checkboxes').commandId].submenu.commandsMap[contextMenu.getMenuItemById('auto').commandId].checked );
   store.set('QuitNotification', contextMenu.commandsMap[contextMenu.getMenuItemById('checkboxes').commandId].submenu.commandsMap[contextMenu.getMenuItemById('quit').commandId].checked );
   store.set('StartNotification', contextMenu.commandsMap[contextMenu.getMenuItemById('checkboxes').commandId].submenu.commandsMap[contextMenu.getMenuItemById('start').commandId].checked );
   store.set('UsingWindow', contextMenu.commandsMap[contextMenu.getMenuItemById('checkboxes').commandId].submenu.commandsMap[contextMenu.getMenuItemById('window').commandId].checked );
   store.set('UsingFrame', contextMenu.commandsMap[contextMenu.getMenuItemById('checkboxes').commandId].submenu.commandsMap[contextMenu.getMenuItemById('frame').commandId].checked );
+  //en/disable autolauncher
+  autolauncher.isEnabled().then(function(isEnabled){if(GetAutoLauncheckboxState()){if(!isEnabled){autolauncher.enable();};} else {if(isEnabled){autolauncher.disable();};};});
 };
 //END
