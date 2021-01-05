@@ -29,7 +29,7 @@ class PeersUI {
     _onPeerJoined(peer) {
         if ($(peer.id)) return; // peer already exists 
         const peerUI = new PeerUI(peer);
-        ipcRenderer.send('peerJoined', peer);//send peer to main.js ln.35
+        ipcRenderer.send('peerJoined', peer);//send peer to main.js ln.34
         $$('x-peers').appendChild(peerUI.$el);
     }
 
@@ -42,7 +42,7 @@ class PeersUI {
         const $peer = $(peerId);
         if (!$peer) return;
         $peer.remove();
-        ipcRenderer.send('peerLeft', peerId);//send peerId to main.js ln.49
+        ipcRenderer.send('peerLeft', peerId);//send peerId to main.js ln.48
     }
 
     _onFileProgress(progress) {
@@ -53,7 +53,7 @@ class PeersUI {
     }
 
     _clearPeers() {
-        ipcRenderer.send('clearPeers');//notify main.js ln.42
+        ipcRenderer.send('clearPeers');//notify main.js ln.41
         const $peers = $$('x-peers').innerHTML = '';
     }   
     
