@@ -1,4 +1,4 @@
-//  modified/added ln.3, 61-69, and 373-387
+//  modified/added ln.3, 15, 62-70, and 374-388
 
 const { ipcRenderer } = require( "electron" ); //added for communication with main.js
 
@@ -12,6 +12,7 @@ class ServerConnection {
         Events.on('beforeunload', e => this._disconnect());
         Events.on('pagehide', e => this._disconnect());
         document.addEventListener('visibilitychange', e => this._onVisibilityChange());
+        ipcRenderer.on('disconnect', () => this._disconnect());     //so the old device disapears
     }
 
     _connect() {
@@ -382,7 +383,7 @@ class PeersManager {
             };
             this._onFilesSelected(message); //call to send files like clicking on peer
         });
-        ipcRenderer.on('sendText', (event, message) => {// calles by main.js ln.155
+        ipcRenderer.on('sendText', (event, message) => {// called by main.js ln.155
             this._onSendText(message);      //call to send files like right clicking on peer 
         });
     }
