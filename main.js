@@ -318,20 +318,8 @@ app.whenReady().then(createWindow).then(StartNotification).then(() => {
   }
   tray.setContextMenu(contextMenu); //setting contextMenu
   tray.setToolTip(GetToolTip()); //get the text shown when hovering over the TrayIcon
-  let autolauncher = new AutoLaunch({ //create an auto launcher
+  var autolauncher = new AutoLaunch({ //create an auto launcher
     name: 'SnapdropTray'  //no path needs to be specyfied; https://github.com/Teamwork/node-auto-launch/issues/99 -> this is why productName='SnapdropTray' and not 'Snapdrop Tray'
-  });
-
-  autolauncher.isEnabled().then(function(isEnabled){//lookup if autostart already is enabled
-    if(GetAutoLauncheckboxState()){
-      if(!isEnabled){ //if it should but it isnt
-        autolauncher.enable(); //enable
-      };
-    } else {
-      if(isEnabled){ //if it shouldn't but it is
-        autolauncher.disable(); //disable
-      };
-    };
   });
 });
 //END
@@ -354,6 +342,9 @@ function SaveStates(){
   store.set('UsingWindow', contextMenu.commandsMap[contextMenu.getMenuItemById('checkboxes').commandId].submenu.commandsMap[contextMenu.getMenuItemById('window').commandId].checked );
   store.set('UsingFrame', contextMenu.commandsMap[contextMenu.getMenuItemById('checkboxes').commandId].submenu.commandsMap[contextMenu.getMenuItemById('frame').commandId].checked );
   //en/disable autolauncher
+  var autolauncher = new AutoLaunch({ //create an auto launcher
+    name: 'SnapdropTray'  //no path needs to be specyfied; https://github.com/Teamwork/node-auto-launch/issues/99 -> this is why productName='SnapdropTray' and not 'Snapdrop Tray'
+  });
   autolauncher.isEnabled().then(function(isEnabled){if(GetAutoLauncheckboxState()){if(!isEnabled){autolauncher.enable();};} else {if(isEnabled){autolauncher.disable();};};});
 };
 //END
