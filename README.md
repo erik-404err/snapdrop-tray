@@ -30,6 +30,7 @@ The Submenus 'Send Text' and 'Send Files' should show your Snapdrop-name at the 
 
 The 'Settings' Submenu contains:
 
+- __Launch on startup__ (launches snapdrop-tray on systemstartup/login using npm auto-launch if enabled)
 - __Start Notification__ (pushes a Notification on sucsessful startup if enabled)
 - __Quit Notification__ (pushes a waring Notification when the user closes the Snapdrop window if enabled)
 - __Using Window__ (if enabled you'll see a Snapdrop window, if disabled you'll see a Tray Icon with 'Send' submenus)
@@ -39,11 +40,9 @@ The 'Settings' Submenu contains:
 
 
 ## Known issues:
-- When sending a File via the Tray Icon, the application holds for a few seconds, making the Filesharing prosess slower.
 - When sending Text messages via the Tray Icon on Linux, the Inputbox has black corners. This is caused by electron not supporting transparent background on linux (yet). 
-- When reloading the application, the old device is still found in Snapdrop
-- The Window isnt in the perfect positioning for everybody. This can be fixed by (somehow) getting the screenresulution of the client 
+- The Window isn't in the perfect positioning for everybody. This can be fixed by somehow getting the position of the Tray Icon (bottom right, top left, ...)
 
 ## Add in the Future
-- an 'lauch on startup' option
 - dynamic resizing of the textarea in TextInput.html
+- feel free to suggest something ...
