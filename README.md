@@ -45,4 +45,5 @@ The 'Settings' Submenu contains:
 
 ## Add in the Future
 - dynamic resizing of the textarea in TextInput.html
+- automaticly download recived files into a selectable path
 - feel free to suggest something ...
