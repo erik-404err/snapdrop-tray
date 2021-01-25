@@ -42,6 +42,8 @@ The 'Settings' Submenu contains:
 ## Known issues:
 - When sending Text messages via the Tray Icon on Linux, the Inputbox has black corners. This is caused by electron not supporting transparent background on linux (yet). 
 - The Window isn't in the perfect positioning for everybody. This can be fixed by somehow getting the position of the Tray Icon (bottom right, top left, ...)
+- sending links causes Snapdrop to open a Browserwindow in electron on click, which doesnt show up. Change this to "copy text" or open a real browser on click
+
 
 ## Add in the Future
 - dynamic resizing of the textarea in TextInput.html
